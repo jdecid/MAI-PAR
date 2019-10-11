@@ -2,7 +2,7 @@
     (:domain lunar-lockout)
     
     (:objects
-        Red Horange Hyellow Hgreen Hblue Hpurple - spacecraft
+        Red Orange Yellow Green Blue Purple - spacecraft
         C1 C2 C3 C4 C5 - coord
     )
 
@@ -25,11 +25,11 @@
 
         ; Problem custom definition
 
-		(at Horange C1 C1)
-		(at Hyellow C1 C3)
-		(at Hgreen C1 C5)
-		(at Hblue C3 C1)
-		(at Hpurple C5 C1)
+		(at Orange C1 C1)
+		(at Yellow C1 C3)
+		(at Green C1 C5)
+		(at Blue C3 C1)
+		(at Purple C5 C1)
 		(at Red C5 C5)
 
 		(empty C1 C2)

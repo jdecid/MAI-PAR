@@ -12,102 +12,127 @@
 
     (:predicates
         (at ?s - spacecraft ?x ?y - coord)
+        (empty ?x ?y - coord)
         (next ?x ?y - coord)
         (adjacent ?x ?y - coord)
     )
 
     (:action move-up
-        :parameters (?ship ?block - spacecraft ?x1 ?x2 ?xtarget ?y - coord)
+        :parameters (?ship - spacecraft ?x ?y ?xtarget - coord)
 
         :precondition (and
-            (adjacent ?x2 ?xtarget)                       ; Target x is adjacent to the block spacecraft
-            (at ?ship ?x1 ?y) (at ?block ?x2 ?y)          ; Both spacecrafts are at the given positions
-            (next ?x2 ?x1) (not (adjacent ?x2 ?x1))       ; The ship is below, but not adjacent
-            (forall (?obstacle - spacecraft ?x3 - coord)  ; There are no obstacles between the spacecraft and the block one
-                (not (and
-                    (at ?obstacle ?x3 ?y)                 ; 
-                    (not (next ?x1 ?x3))                  ; 
-                    (not (= ?x1 ?x3))                     ;
-                    (next ?x2 ?x3)                        ;
+            (at ?ship ?x ?y)                                        ; Spacecraft is at the given coordinates.
+            (empty ?xtarget ?y)                                     ; The target cell is empty
+            (next ?xtarget ?x)                                      ; The current cell x is below the target xtarget
+
+            (exists (?limit - spacecraft ?xlimit - coord) (and      ; It exists an spacecraft that limits the movement
+                (at ?limit ?xlimit ?y)                              ; located at <xblock, y> (same column)
+                (adjacent ?xlimit ?xtarget)                         ; right above the target cell.
+            ))
+
+            (forall (?obstacle - spacecraft ?xobstacle - coord) 
+                (not (and                                           ; Is not valid if:
+                    (not (= ?ship ?obstacle))                       ; 1) The obstacle is the same spacecraft
+                    (at ?obstacle ?xobstacle ?y)                    ; 2) There is an obstacle at <xobstaacle, y>
+                    (next ?xtarget ?xobstacle)                      ;    - that is below the xblock 
+                    (not (next ?x ?xobstacle))                      ;    - and above the spaceraft x
                 ))
             )
         )
 
         :effect (and
-            (not (at ?ship ?x1 ?y))
-            (at ?ship ?xtarget ?y)
+            (not (at ?ship ?x ?y)) (empty ?x ?y)                    ; We remove the ship from the current cell and mark it as empty.
+            (at ?ship ?xtarget ?y) (not (empty ?xtarget ?y))        ; We set the ship in the new cell and unmark it as empty.
             (increase (movements) 1)
         )
     )
 
     (:action move-down
-        :parameters (?ship ?block - spacecraft ?x1 ?x2 ?xtarget ?y - coord)
+        :parameters (?ship - spacecraft ?x ?y ?xtarget - coord)
 
         :precondition (and
-            (adjacent ?xtarget ?x2)                       ; Target x is adjacent to the block spacecraft
-            (at ?ship ?x1 ?y) (at ?block ?x2 ?y)          ; Both spacecrafts are at the given positions
-            (next ?x1 ?x2) (not (adjacent ?x1 ?x2))       ; The ship is below, but not adjacent
-            (forall (?obstacle - spacecraft ?x3 - coord)  ; There are no obstacles between the spacecraft and the block one
-                (not (and
-                    (at ?obstacle ?x3 ?y)                 ; 
-                    (not (next ?x3 ?x1))                  ;
-                    (not (= ?x1 ?x3))                     ;
-                    (next ?x3 ?x2)                        ;
+            (at ?ship ?x ?y)                                        ; Spacecraft is at the given coordinates.
+            (empty ?xtarget ?y)                                     ; The target cell is empty
+            (next ?x ?xtarget)                                      ; The target cell xtarget is below the current x
+
+            (exists (?limit - spacecraft ?xlimit - coord) (and      ; It exists an spacecraft that limits the movement
+                (at ?limit ?xlimit ?y)                              ; located at <xblock, y> (same column)
+                (adjacent ?xtarget ?xlimit)                         ; right above the target cell.
+            ))
+
+            (forall (?obstacle - spacecraft ?xobstacle - coord) 
+                (not (and                                           ; Is not valid if:
+                    (not (= ?ship ?obstacle))                       ; 1) The obstacle is the same spacecraft
+                    (at ?obstacle ?xobstacle ?y)                    ; 2) There is an obstacle at <xobstaacle, y>
+                    (next ?xtarget ?xobstacle)                      ;    - that is below the xblock 
+                    (not (next ?x ?xobstacle))                      ;    - and above the spaceraft x
                 ))
             )
         )
 
         :effect (and
-            (not (at ?ship ?x1 ?y))
-            (at ?ship ?xtarget ?y)
+            (not (at ?ship ?x ?y)) (empty ?x ?y)                    ; We remove the ship from the current cell and mark it as empty.
+            (at ?ship ?xtarget ?y) (not (empty ?xtarget ?y))        ; We set the ship in the new cell and unmark it as empty.
             (increase (movements) 1)
         )
     )
 
     (:action move-left
-        :parameters (?ship ?block - spacecraft ?x ?y1 ?y2 ?ytarget - coord)
+        :parameters (?ship - spacecraft ?x ?y ?ytarget - coord)
 
         :precondition (and
-            (adjacent ?y2 ?ytarget)                       ; Target x is adjacent to the block spacecraft
-            (at ?ship ?x ?y1) (at ?block ?x ?y2)          ; Both spacecrafts are at the given positions
-            (next ?y2 ?y1) (not (adjacent ?y2 ?y1))       ; The ship is below, but not adjacent
-            (forall (?obstacle - spacecraft ?y3 - coord)  ; There are no obstacles between the spacecraft and the block one
-                (not (and
-                    (at ?obstacle ?x ?y3)                 ; 
-                    (not (next ?y1 ?y3))                  ;
-                    (not (= ?y1 ?y3))                     ; 
-                    (next ?y2 ?y3)                        ;
+            (at ?ship ?x ?y)                                        ; Spacecraft is at the given coordinates.
+            (empty ?x ?ytarget)                                     ; The target cell is empty
+            (next ?ytarget ?y)                                      ; The target cell ytarget is before the current y
+
+            (exists (?limit - spacecraft ?ylimit - coord) (and      ; It exists an spacecraft that limits the movement
+                (at ?limit ?x ?ylimit)                              ; located at <x, yblock> (same row)
+                (adjacent ?ylimit ?ytarget)                         ; right before the target cell.
+            ))
+
+            (forall (?obstacle - spacecraft ?yobstacle - coord) 
+                (not (and                                           ; Is not valid if:
+                    (not (= ?ship ?obstacle))                       ; 1) The obstacle is the same spacecraft
+                    (at ?obstacle ?x ?yobstacle)                    ; 2) There is an obstacle at <xobstaacle, y>
+                    (next ?ytarget ?yobstacle)                      ;    - that is after the ytarget 
+                    (not (next ?y ?yobstacle))                      ;    - and before the spaceraft y
                 ))
             )
         )
 
         :effect (and
-            (not (at ?ship ?x ?y1))
-            (at ?ship ?x ?ytarget)
+            (not (at ?ship ?x ?y)) (empty ?x ?y)                    ; We remove the ship from the current cell and mark it as empty.
+            (at ?ship ?x ?ytarget) (not (empty ?x ?ytarget))        ; We set the ship in the new cell and unmark it as empty.
             (increase (movements) 1)
         )
     )
 
     (:action move-right
-        :parameters (?ship ?block - spacecraft ?x ?y1 ?y2 ?ytarget - coord)
+        :parameters (?ship - spacecraft ?x ?y ?ytarget - coord)
 
         :precondition (and
-            (adjacent ?ytarget ?y2)                       ; Target x is adjacent to the block spacecraft
-            (at ?ship ?x ?y1) (at ?block ?x ?y2)          ; Both spacecrafts are at the given positions
-            (next ?y1 ?y2) (not (adjacent ?y1 ?y2))       ; The ship is below, but not adjacent
-            (forall (?obstacle - spacecraft ?y3 - coord)  ; There are no obstacles between the spacecraft and the block one
-                (not (and
-                    (at ?obstacle ?x ?y3)                 ; 
-                    (not (next ?y3 ?y1))                  ;
-                    (not (= ?y1 ?y3))                     ; 
-                    (next ?y3 ?y2)                        ;
+            (at ?ship ?x ?y)                                        ; Spacecraft is at the given coordinates.
+            (empty ?x ?ytarget)                                     ; The target cell is empty
+            (next ?y ?ytarget)                                      ; The target cell ytarget is before the current y
+
+            (exists (?limit - spacecraft ?ylimit - coord) (and      ; It exists an spacecraft that limits the movement
+                (at ?limit ?x ?ylimit)                              ; located at <x, yblock> (same row)
+                (adjacent ?ytarget ?ylimit)                         ; right before the target cell.
+            ))
+
+            (forall (?obstacle - spacecraft ?yobstacle - coord) 
+                (not (and                                           ; Is not valid if:
+                    (not (= ?ship ?obstacle))                       ; 1) The obstacle is the same spacecraft
+                    (at ?obstacle ?x ?yobstacle)                    ; 2) There is an obstacle at <xobstaacle, y>
+                    (next ?yobstacle ?ytarget)                      ;    - that is after the ytarget 
+                    (not (next ?yobstacle ?y))                      ;    - and before the spaceraft y
                 ))
             )
         )
 
         :effect (and
-            (not (at ?ship ?x ?y1))
-            (at ?ship ?x ?ytarget)
+            (not (at ?ship ?x ?y)) (empty ?x ?y)                    ; We remove the ship from the current cell and mark it as empty.
+            (at ?ship ?x ?ytarget) (not (empty ?x ?ytarget))        ; We set the ship in the new cell and unmark it as empty.
             (increase (movements) 1)
         )
     )
