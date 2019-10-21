@@ -1,7 +1,9 @@
 import re
+import os
 import time
 import argparse
 import tkinter as tk
+
 
 class GameBoard(tk.Frame):
     def __init__(self, parent, rows=5, columns=5, size=50):
@@ -77,9 +79,18 @@ def read_spacecrafts(problem_number):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('problem_number', type=int)
+    parser.add_argument('--file', type=bool, default=False)
     args = parser.parse_args()
 
     spacecrafts = read_spacecrafts(args.problem_number)
+
+    if args.file:
+        with open('plan.txt', mode='r') as f:
+            plan = f.readlines()
+    else:
+        cmd = f'./ff -o lunar_lockout_domain.pddl -f lunar_lockout_{args.problem_number}.pddl'
+        plan = os.popen(cmd).read()
+        plan = [m.group().lower() for m in re.finditer('MOVE\-[A-Z]+ [A-Z]+ C[0-9] C[0-9] C[0-9]', plan)]
 
     root = tk.Tk()
     board = GameBoard(root)
@@ -91,22 +102,20 @@ if __name__ == '__main__':
     root.update_idletasks()
     root.update()
 
-    with open('plan.txt', mode='r') as f:
-        lines = f.readlines()
-        for idx, line in enumerate(lines):
-            time.sleep(2)
+    for idx, line in enumerate(plan):
+        time.sleep(2)
 
-            action = line.strip().split('(move-')[1][:-1]
-            direction, spacecraft, _, _, cell = action.split()
-            if direction == 'up' or direction == 'down':
-                new_coords = (int(cell[-1]) - 1, board.pieces[spacecraft][1])
-            else:
-                new_coords = (board.pieces[spacecraft][0], int(cell[-1]) - 1)
+        action = line.strip().split('move-')[1]
+        direction, spacecraft, _, _, cell = action.split()
+        if direction == 'up' or direction == 'down':
+            new_coords = (int(cell[-1]) - 1, board.pieces[spacecraft][1])
+        else:
+            new_coords = (board.pieces[spacecraft][0], int(cell[-1]) - 1)
 
-            print(f'Step {idx + 1:2}: move {spacecraft} to ({new_coords[0] + 1}, {new_coords[1] + 1})')
-            board.place_piece(spacecraft, new_coords[0], new_coords[1])
+        print(f'Step {idx + 1:2}: move {spacecraft} to ({new_coords[0] + 1}, {new_coords[1] + 1})')
+        board.place_piece(spacecraft, new_coords[0], new_coords[1])
 
-            root.update_idletasks()
-            root.update()
+        root.update_idletasks()
+        root.update()
 
     root.mainloop()
