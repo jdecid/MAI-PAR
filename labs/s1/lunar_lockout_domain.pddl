@@ -2,7 +2,7 @@
     (:requirements :strips :typing :adl :equality :fluents)
 
     (:types
-        coord - number
+        coord - object
         spacecraft - object
     )
 
