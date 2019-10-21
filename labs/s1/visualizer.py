@@ -1,8 +1,7 @@
+import re
 import time
+import argparse
 import tkinter as tk
-
-from generator import spacecrafts
-
 
 class GameBoard(tk.Frame):
     def __init__(self, parent, rows=5, columns=5, size=50):
@@ -60,7 +59,28 @@ class GameBoard(tk.Frame):
         self.canvas.tag_lower('square')
 
 
+def read_spacecrafts(problem_number):
+    with open(f'lunar_lockout_{problem_number}.pddl', mode='r') as f:
+        lines = ''.join(f.readlines())
+        matches = [x.group() for x in re.finditer(r'\(at [A-Za-z]+ C[1-5] C[1-5]\)', lines)]
+        
+        spacecrafts = {}
+        for match in matches:
+            _, k, x, y = match[:-1].split()
+            if k == 'Red' and x == 'C3' and y == 'C3':
+                continue
+            spacecrafts[k] = (int(x[1]), int(y[1]))
+
+    return spacecrafts
+
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('problem_number', type=int)
+    args = parser.parse_args()
+
+    spacecrafts = read_spacecrafts(args.problem_number)
+
     root = tk.Tk()
     board = GameBoard(root)
     board.pack(side='top', fill='both', expand='true', padx=4, pady=4)
@@ -74,19 +94,19 @@ if __name__ == '__main__':
     with open('plan.txt', mode='r') as f:
         lines = f.readlines()
         for idx, line in enumerate(lines):
-            action = line.strip().split(': (move-')[1][:-1]
+            time.sleep(2)
+
+            action = line.strip().split('(move-')[1][:-1]
             direction, spacecraft, _, _, cell = action.split()
             if direction == 'up' or direction == 'down':
                 new_coords = (int(cell[-1]) - 1, board.pieces[spacecraft][1])
             else:
                 new_coords = (board.pieces[spacecraft][0], int(cell[-1]) - 1)
 
-            print(f'Step {idx:2}: move {spacecraft} to {new_coords}')
+            print(f'Step {idx + 1:2}: move {spacecraft} to ({new_coords[0] + 1}, {new_coords[1] + 1})')
             board.place_piece(spacecraft, new_coords[0], new_coords[1])
 
             root.update_idletasks()
             root.update()
-
-            time.sleep(1)
 
     root.mainloop()

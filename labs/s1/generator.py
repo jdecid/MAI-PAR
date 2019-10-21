@@ -1,16 +1,18 @@
 # Pair of coords (None if unused)
-problem_number = 39
+problem_number = 1
 spacecrafts = {
-    'Red': (5, 5),
-    'Orange': (1, 1),
-    'Yellow': (1, 3),
-    'Green': (1, 5),
-    'Blue': (3, 1),
-    'Purple': (5, 1)
+    'Red':    (5, 5),
+    'Orange': (1, 5),
+    'Yellow': (4, 4),
+    'Green':  (2, 3),
+    #'Blue':   (5, 5),
+    'Purple': (3, 2)
 }
 
 with open('lunar_lockout_template.pddl', mode='r') as pf:
-    code = ''.join(pf.readlines())
+    lines = pf.readlines()
+    lines[0] = f'(define (problem lunar-lockout{problem_number})\n'
+    code = ''.join(lines)
     
     codified_at = []
     codified_empty = []

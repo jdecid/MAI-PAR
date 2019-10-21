@@ -1,4 +1,4 @@
-(define (problem lunar-lockout@)
+(define (problem lunar-lockout2)
     (:domain lunar-lockout)
     
     (:objects
@@ -25,7 +25,32 @@
 
         ; Problem custom definition
 
-;@ SPECIFIC PROBLEM @;
+		(at Red C1 C1)
+		(at Yellow C1 C4)
+		(at Purple C2 C2)
+		(at Green C4 C4)
+		(at Orange C5 C2)
+
+		(empty C1 C2)
+		(empty C1 C3)
+		(empty C1 C5)
+		(empty C2 C1)
+		(empty C2 C3)
+		(empty C2 C4)
+		(empty C2 C5)
+		(empty C3 C1)
+		(empty C3 C2)
+		(empty C3 C3)
+		(empty C3 C4)
+		(empty C3 C5)
+		(empty C4 C1)
+		(empty C4 C2)
+		(empty C4 C3)
+		(empty C4 C5)
+		(empty C5 C1)
+		(empty C5 C3)
+		(empty C5 C4)
+		(empty C5 C5)
     )
 
     (:goal (at Red C3 C3))

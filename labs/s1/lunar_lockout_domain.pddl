@@ -64,8 +64,8 @@
                 (not (and                                           ; Is not valid if:
                     (not (= ?ship ?obstacle))                       ; 1) The obstacle is the same spacecraft
                     (at ?obstacle ?xobstacle ?y)                    ; 2) There is an obstacle at <xobstaacle, y>
-                    (next ?xtarget ?xobstacle)                      ;    - that is below the xblock 
-                    (not (next ?x ?xobstacle))                      ;    - and above the spaceraft x
+                    (next ?xobstacle ?xtarget)                      ;    - that is below the xblock 
+                    (not (next ?xobstacle ?x))                      ;    - and above the spaceraft x
                 ))
             )
         )
@@ -123,7 +123,7 @@
             (forall (?obstacle - spacecraft ?yobstacle - coord) 
                 (not (and                                           ; Is not valid if:
                     (not (= ?ship ?obstacle))                       ; 1) The obstacle is the same spacecraft
-                    (at ?obstacle ?x ?yobstacle)                    ; 2) There is an obstacle at <xobstaacle, y>
+                    (at ?obstacle ?x ?yobstacle)                    ; 2) There is an obstacle at <xobstacle, y>
                     (next ?yobstacle ?ytarget)                      ;    - that is after the ytarget 
                     (not (next ?yobstacle ?y))                      ;    - and before the spaceraft y
                 ))

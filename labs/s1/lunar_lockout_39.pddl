@@ -1,4 +1,4 @@
-(define (problem lunar-lockout1)
+(define (problem lunar-lockout39)
     (:domain lunar-lockout)
     
     (:objects
@@ -26,10 +26,10 @@
         ; Problem custom definition
 
 		(at Orange C1 C1)
-		(at Yellow C1 C3)
-		(at Green C1 C5)
-		(at Blue C3 C1)
-		(at Purple C5 C1)
+		(at Green C1 C3)
+		(at Purple C1 C5)
+		(at Yellow C3 C1)
+		(at Blue C5 C1)
 		(at Red C5 C5)
 
 		(empty C1 C2)
