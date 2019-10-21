@@ -79,18 +79,18 @@ def read_spacecrafts(problem_number):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('problem_number', type=int)
-    parser.add_argument('--file', type=bool, default=False)
+    parser.add_argument('--file', action='store_true')
     args = parser.parse_args()
 
     spacecrafts = read_spacecrafts(args.problem_number)
 
     if args.file:
         with open('plan.txt', mode='r') as f:
-            plan = f.readlines()
+            plan = ''.join(f.readlines())
     else:
         cmd = f'./ff -o lunar_lockout_domain.pddl -f lunar_lockout_{args.problem_number}.pddl'
         plan = os.popen(cmd).read()
-        plan = [m.group().lower() for m in re.finditer('MOVE\-[A-Z]+ [A-Z]+ C[0-9] C[0-9] C[0-9]', plan)]
+    plan = [x.group().lower() for x in re.finditer(r'MOVE\-[A-Z]+ [A-Z]+ C[0-9] C[0-9] C[0-9]', plan)]
 
     root = tk.Tk()
     board = GameBoard(root)
